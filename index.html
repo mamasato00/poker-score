@@ -1,201 +1,22 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#07090d">
-<title>Poker Score</title>
-<style>
-:root{
- --bg:#07090d;--panel:#11151c;--panel2:#171c25;--line:#29303b;
- --text:#f5f7fa;--muted:#8c96a5;--gold:#d7b56d;--green:#4ade80;--red:#fb7185;
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg)}
-body{
- color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;
- letter-spacing:.01em;
-}
-body:before{
- content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
- background:radial-gradient(circle at 50% -10%,#253142 0,transparent 38%);
-}
-main{position:relative;max-width:620px;margin:auto;padding:18px 14px calc(35px + env(safe-area-inset-bottom))}
-header{text-align:center;padding:8px 0 18px}
-.logo{font-size:14px;letter-spacing:.28em;color:var(--gold);font-weight:800}
-h1{margin:5px 0 2px;font-size:31px;letter-spacing:.08em}
-.subtitle{color:var(--muted);font-size:12px}
-.card{
- background:linear-gradient(145deg,rgba(24,29,38,.98),rgba(13,17,23,.98));
- border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0;
- box-shadow:0 14px 35px rgba(0,0,0,.25);
-}
-.hero{padding:18px}
-.heroTop{display:flex;align-items:center;justify-content:space-between}
-.label{font-size:11px;color:var(--muted);letter-spacing:.08em}
-.start{font-size:27px;font-weight:900;margin-top:1px}
-.start span{color:var(--gold)}
-.btn{
- border:1px solid #343c48;background:#1c222c;color:#fff;border-radius:12px;
- padding:11px 13px;font-size:14px;font-weight:800;cursor:pointer;
- -webkit-tap-highlight-color:transparent;
-}
-.btn:active{transform:scale(.97)}
-.btnGold{background:linear-gradient(135deg,#e2c47f,#b9934f);color:#12100b;border:0}
-.btnDark{background:#0b0e13}
-.sectionHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
-.sectionTitle{font-size:17px;font-weight:900}
-.badge{font-size:11px;color:var(--muted);background:#0b0e13;border:1px solid var(--line);padding:5px 8px;border-radius:99px}
-.players{margin-top:5px}
-.player{
- display:grid;grid-template-columns:31px minmax(75px,1fr) 116px 90px 34px;
- gap:7px;align-items:center;padding:11px 0;border-bottom:1px solid #222934;
-}
-.player:last-child{border-bottom:0}
-.rank{font-weight:900;color:#707a89;font-size:12px;text-align:center}
-.name{
- width:100%;border:1px solid #303846;border-radius:10px;background:#0c1016;color:#fff;
- padding:10px;font-size:15px;font-weight:750;outline:none
-}
-.end{
- width:100%;border:1px solid #303846;border-radius:10px;background:#0c1016;color:#fff;
- padding:10px;font-size:17px;font-weight:900;text-align:right;outline:none
-}
-.name:focus,.end:focus{border-color:#a98a52;box-shadow:0 0 0 2px rgba(215,181,109,.12)}
-.diff{text-align:right;font-weight:900;font-size:13px}
-.pos{color:var(--green)}.neg{color:var(--red)}.zero{color:#9aa3b1}
-.x{padding:7px 9px;background:transparent;border:0;color:#687282;font-size:21px}
-.summary{
- display:flex;align-items:center;justify-content:space-between;
- border-top:1px solid var(--line);padding-top:15px;margin-top:4px
-}
-.totalLabel{color:var(--muted);font-size:12px}
-.total{font-size:21px;font-weight:950}
-.notice{
- margin-top:11px;border-radius:13px;padding:11px 12px;font-size:13px;font-weight:800;
- display:flex;align-items:center;gap:8px
-}
-.ok{background:rgba(74,222,128,.09);border:1px solid rgba(74,222,128,.22);color:var(--green)}
-.bad{background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.2);color:var(--red)}
-.save{width:100%;margin-top:11px;padding:14px;font-size:15px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.hint{color:#687282;font-size:11px;line-height:1.5;margin-top:9px}
-.history{display:none}
-.game{padding:12px 0;border-bottom:1px solid #252c36}
-.game:last-child{border:0}
-.gameDate{color:var(--muted);font-size:11px;margin-bottom:8px}
-.row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
-.empty{text-align:center;color:var(--muted);padding:18px}
-@media(max-width:500px){
- .player{grid-template-columns:26px minmax(62px,1fr) 98px 72px 30px}
- .diff{font-size:11px}
- .name{font-size:14px;padding:9px 7px}.end{font-size:16px;padding:9px 7px}
-}
-</style>
-</head>
-<body>
-<main>
-<header>
- <div class="logo">♠  POKER SCORE  ♠</div>
- <h1>SESSION TABLE</h1>
- <div class="subtitle">終了点数を入力するだけ。精算をスマートに。</div>
-</header>
-
-<section class="card hero">
- <div class="heroTop">
-  <div><div class="label">STARTING STACK</div><div class="start"><span>5,000</span> 点</div></div>
-  <button class="btn btnGold" id="add">＋ PLAYER</button>
- </div>
-</section>
-
-<section class="card">
- <div class="sectionHead">
-  <div class="sectionTitle">RESULT</div><div class="badge" id="count">2 PLAYERS</div>
- </div>
- <div class="players" id="players"></div>
- <div class="summary"><div><div class="totalLabel">差額合計</div></div><div class="total" id="total">0 点</div></div>
- <div class="notice ok" id="notice">✓ 精算OK — 合計が0点です</div>
- <button class="btn btnGold save" id="save">結果を確定する</button>
- <div class="hint">※ 全員5,000点スタート。終了点数 − 5,000点で差額を自動計算します。</div>
-</section>
-
-<section class="card">
- <div class="grid">
-  <button class="btn" id="newGame">↻ 新しいゲーム</button>
-  <button class="btn btnDark" id="reset">入力をリセット</button>
- </div>
-</section>
-
-<section class="card history" id="historyCard">
- <div class="sectionHead"><div class="sectionTitle">HISTORY</div><button class="btn" id="clear">履歴削除</button></div>
- <div id="history"></div>
-</section>
-</main>
-<script>
-(()=>{"use strict";
-const START=5000,$=id=>document.getElementById(id);
-const load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
-const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-const fmt=n=>Number(n).toLocaleString("ja-JP");
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let players=load("pokerPlayersV3")||[{name:"PLAYER 1",end:5000},{name:"PLAYER 2",end:5000}];
-
-function render(){
- const box=$("players"), diffs=players.map(p=>(Number(p.end)||0)-START);
- const order=[...players.keys()].sort((a,b)=>diffs[b]-diffs[a]);
- $("count").textContent=players.length+" PLAYERS";
- box.innerHTML=players.map((p,i)=>{
-  const d=diffs[i],cl=d>0?"pos":d<0?"neg":"zero";
-  return `<div class="player">
-   <div class="rank">${order.indexOf(i)+1}</div>
-   <input class="name" data-i="${i}" value="${esc(p.name)}">
-   <input class="end" data-i="${i}" type="number" inputmode="numeric" min="0" step="100" value="${Number(p.end)||0}">
-   <div class="diff ${cl}">${d>0?"+":""}${fmt(d)}点</div>
-   <button class="x" data-i="${i}">×</button>
-  </div>`;
- }).join("")||'<div class="empty">＋ PLAYER から追加してください</div>';
-
- document.querySelectorAll(".name").forEach(el=>el.onchange=e=>{
-  players[+e.target.dataset.i].name=e.target.value.trim()||"PLAYER";save("pokerPlayersV3",players);
- });
- document.querySelectorAll(".end").forEach(el=>el.onchange=e=>{
-  const i=+e.target.dataset.i;players[i].end=Math.max(0,Number(e.target.value)||0);save("pokerPlayersV3",players);render();
- });
- document.querySelectorAll(".x").forEach(el=>el.onclick=()=>{
-  if(players.length<=2){alert("最低2人で使用できます。");return}
-  players.splice(+el.dataset.i,1);save("pokerPlayersV3",players);render();
- });
- const total=diffs.reduce((a,b)=>a+b,0);
- $("total").textContent=(total>0?"+":"")+fmt(total)+" 点";
- $("notice").className="notice "+(total===0?"ok":"bad");
- $("notice").textContent=total===0?"✓ 精算OK — 合計が0点です":"⚠ 合計 "+(total>0?"+":"")+fmt(total)+"点 — 入力を確認してください";
- renderHistory();
-}
-$("add").onclick=()=>{players.push({name:"PLAYER "+(players.length+1),end:START});save("pokerPlayersV3",players);render()};
-function resetPlayers(){players=players.map(p=>({name:p.name,end:START}));save("pokerPlayersV3",players);render()}
-$("reset").onclick=()=>{if(confirm("終了点数をすべて5,000点に戻しますか？"))resetPlayers()};
-$("newGame").onclick=()=>{if(confirm("新しいゲームを開始しますか？\n現在の入力は5,000点に戻ります。"))resetPlayers()};
-$("save").onclick=()=>{
- const total=players.reduce((a,p)=>a+(Number(p.end)||0)-START,0);
- if(total!==0){alert("差額の合計が0点ではありません。\n終了点数を確認してください。");return}
- const h=load("pokerHistoryV3")||[];
- h.unshift({date:new Date().toLocaleString("ja-JP"),players:players.map(p=>({...p,end:Number(p.end)||0}))});
- save("pokerHistoryV3",h.slice(0,50));alert("結果を保存しました。");renderHistory();
-};
-$("clear").onclick=()=>{if(confirm("履歴をすべて削除しますか？")){localStorage.removeItem("pokerHistoryV3");renderHistory()}};
-function renderHistory(){
- const h=load("pokerHistoryV3")||[];$("historyCard").style.display=h.length?"block":"none";
- $("history").innerHTML=h.map(g=>{
-  const ps=[...g.players].sort((a,b)=>(b.end-START)-(a.end-START));
-  return `<div class="game"><div class="gameDate">${esc(g.date)}</div>`+
-   ps.map((p,i)=>{let d=p.end-START;return `<div class="row"><span>${i+1}位　${esc(p.name)}</span><b class="${d>0?"pos":d<0?"neg":"zero"}">${d>0?"+":""}${fmt(d)}点</b></div>`}).join("")+
-   `</div>`;
- }).join("");
-}
-render();
-})();
-</script>
-</body>
-</html>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#07090d"><title>Poker Score</title><style>
+:root{--bg:#07090d;--card:#11151c;--line:#29303b;--text:#f5f7fa;--muted:#8c96a5;--gold:#d7b56d;--green:#4ade80;--red:#fb7185}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}main{max-width:620px;margin:auto;padding:18px 14px 35px}header{text-align:center;padding:8px 0 16px}.logo{font-size:14px;letter-spacing:.28em;color:var(--gold);font-weight:800}h1{margin:5px 0 0;font-size:30px;letter-spacing:.08em}.card{background:linear-gradient(145deg,#181d26,#0d1117);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0;box-shadow:0 14px 35px #0004}.top,.summary,.sectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px}.label,.muted{font-size:11px;color:var(--muted)}.start{font-size:27px;font-weight:900}.start span{color:var(--gold)}button{border:1px solid #343c48;background:#1c222c;color:#fff;border-radius:12px;padding:11px 13px;font-size:14px;font-weight:800}button:active{transform:scale(.97)}.gold{background:linear-gradient(135deg,#e2c47f,#b9934f);color:#12100b;border:0}.dark{background:#0b0e13}.title{font-size:17px;font-weight:900}.badge{font-size:11px;color:var(--muted);background:#0b0e13;border:1px solid var(--line);padding:5px 8px;border-radius:99px}.setting{display:grid;grid-template-columns:1fr 140px;gap:12px;align-items:center}.startInput,.name,.end{width:100%;border:1px solid #303846;border-radius:10px;background:#0c1016;color:#fff;padding:10px;outline:none}.startInput,.end{text-align:right;font-size:18px;font-weight:900}.name{font-size:15px}.players{margin-top:5px}.player{display:grid;grid-template-columns:28px minmax(70px,1fr) 105px 82px 30px;gap:7px;align-items:center;padding:11px 0;border-bottom:1px solid #222934}.player:last-child{border:0}.rank{color:#707a89;font-size:12px;text-align:center;font-weight:900}.diff{text-align:right;font-size:12px;font-weight:900}.pos{color:var(--green)}.neg{color:var(--red)}.zero{color:#9aa3b1}.x{padding:5px;background:transparent;border:0;color:#687282;font-size:20px}.summary{border-top:1px solid var(--line);padding-top:14px;margin-top:5px}.total{font-size:21px;font-weight:950}.notice{margin-top:10px;padding:11px;border-radius:13px;font-size:13px;font-weight:800}.ok{background:#4ade8018;border:1px solid #4ade8038;color:var(--green)}.bad{background:#fb718514;border:1px solid #fb718536;color:var(--red)}.full{width:100%;margin-top:10px;padding:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hint{font-size:11px;color:#687282;line-height:1.5;margin-top:8px}.session{display:none}.aggregate{background:#0b0e13;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:10px}.arow,.hrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #252c36;font-size:13px}.arow:last-child,.hrow:last-child{border:0}.history{display:none}.game{padding:11px 0;border-bottom:1px solid #252c36}.date{font-size:11px;color:var(--muted);margin-bottom:5px}@media(max-width:500px){.player{grid-template-columns:25px minmax(60px,1fr) 94px 70px 28px}.diff{font-size:11px}.setting{grid-template-columns:1fr 120px}}
+</style></head><body><main><header><div class="logo">♠ POKER SCORE ♠</div><h1>SESSION TABLE</h1></header>
+<section class="card"><div class="setting"><div><b>STARTING STACK</b><div class="muted">基本は5,000点</div></div><input id="start" class="startInput" type="number" inputmode="numeric" min="0" step="100" value="5000"></div><div class="hint">ゲームごとにスタート点数を変更できます。</div></section>
+<section class="card"><div class="sectionHead"><div class="title">ROUND</div><div class="badge" id="count"></div></div><div id="players" class="players"></div><button id="add" class="gold" style="width:100%;margin-top:9px">＋ PLAYER</button><div class="summary"><span class="muted">今回の差額合計</span><span id="total" class="total">0 点</span></div><div id="notice" class="notice ok">✓ 精算OK — 合計が0点です</div><button id="save" class="gold full">このラウンドを保存</button><div class="grid"><button id="new" >次のラウンド</button><button id="reset" class="dark">点数をリセット</button></div></section>
+<section id="session" class="card session"><div class="sectionHead"><div class="title">SESSION TOTAL</div><div id="roundsBadge" class="badge"></div></div><div id="aggregate" class="aggregate"></div><div id="sessionNotice" class="notice ok"></div></section>
+<section id="historyCard" class="card history"><div class="sectionHead"><div class="title">HISTORY</div><button id="clear">履歴削除</button></div><div id="history"></div></section>
+</main><script>
+(()=>{const $=id=>document.getElementById(id),load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},put=(k,v)=>localStorage.setItem(k,JSON.stringify(v)),fmt=n=>Number(n).toLocaleString("ja-JP"),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let start=Number(localStorage.getItem("psStart"))||5000, players=load("psPlayers")||[{name:"",end:start},{name:"",end:start}], rounds=load("psRounds")||[];$("start").value=start;
+function render(){let ds=players.map(p=>(Number(p.end)||0)-start),order=[...players.keys()].sort((a,b)=>ds[b]-ds[a]);$("count").textContent=players.length+" PLAYERS";$("players").innerHTML=players.map((p,i)=>{let d=ds[i],cl=d>0?"pos":d<0?"neg":"zero";return '<div class="player"><span class="rank">'+(order.indexOf(i)+1)+'</span><input class="name" data-i="'+i+'" placeholder="名前を入力" value="'+esc(p.name)+'"><input class="end" data-i="'+i+'" type="number" inputmode="numeric" min="0" step="100" value="'+(Number(p.end)||0)+'"><span class="diff '+cl+'">'+(d>0?"+":"")+fmt(d)+'点</span><button class="x" data-i="'+i+'">×</button></div>'}).join("");document.querySelectorAll(".name").forEach(e=>e.oninput=x=>{players[+e.dataset.i].name=x.target.value;put("psPlayers",players)});document.querySelectorAll(".end").forEach(e=>e.onchange=x=>{players[+e.dataset.i].end=Math.max(0,Number(x.target.value)||0);put("psPlayers",players);render()});document.querySelectorAll(".x").forEach(e=>e.onclick=()=>{if(players.length<=2){alert("最低2人で使用できます。");return}players.splice(+e.dataset.i,1);put("psPlayers",players);render()});let total=ds.reduce((a,b)=>a+b,0);$("total").textContent=(total>0?"+":"")+fmt(total)+" 点";$("notice").className="notice "+(total===0?"ok":"bad");$("notice").textContent=total===0?"✓ 精算OK — 合計が0点です":"⚠ 合計 "+(total>0?"+":"")+fmt(total)+"点 — 入力を確認してください";renderSession()}
+function reset(){players=players.map(p=>({name:p.name,end:start}));put("psPlayers",players);render()}
+$("start").onchange=()=>{start=Math.max(0,Number($("start").value)||0);localStorage.setItem("psStart",start);players=players.map(p=>({name:p.name,end:start}));put("psPlayers",players);render()};
+$("add").onclick=()=>{players.push({name:"",end:start});put("psPlayers",players);render();setTimeout(()=>document.querySelectorAll(".name").at(-1)?.focus(),30)};
+$("reset").onclick=()=>{if(confirm("終了点数をすべてスタート点数に戻しますか？"))reset()};
+$("new").onclick=()=>{if(confirm("現在の入力をリセットして次のラウンドを始めますか？"))reset()};
+$("save").onclick=()=>{let total=players.reduce((a,p)=>a+(Number(p.end)||0)-start,0);if(total!==0){alert("差額の合計が0点ではありません。\n終了点数を確認してください。");return}rounds.push({date:new Date().toLocaleString("ja-JP"),start,players:players.map(p=>({name:p.name.trim()||"名前未設定",end:Number(p.end)||0}))});put("psRounds",rounds);alert("ラウンドを保存しました！");reset()};
+function renderSession(){let totals={};rounds.forEach(r=>r.players.forEach(p=>{let n=p.name||"名前未設定",d=(Number(p.end)||0)-Number(r.start||5000);totals[n]=(totals[n]||0)+d}));let names=Object.keys(totals).sort((a,b)=>totals[b]-totals[a]);$("session").style.display=rounds.length?"block":"none";$("roundsBadge").textContent=rounds.length+" ROUNDS";$("aggregate").innerHTML=names.map((n,i)=>{let d=totals[n],cl=d>0?"pos":d<0?"neg":"zero";return '<div class="arow"><span>'+(i+1)+'位　'+esc(n)+'</span><b class="'+cl+'">'+(d>0?"+":"")+fmt(d)+'点</b></div>'}).join("");let t=Object.values(totals).reduce((a,b)=>a+b,0);$("sessionNotice").className="notice "+(t===0?"ok":"bad");$("sessionNotice").textContent=t===0?"✓ 全ラウンド合計は0点です":"⚠ 全ラウンド合計 "+(t>0?"+":"")+fmt(t)+"点";renderHistory()}
+function renderHistory(){let h=rounds;$("historyCard").style.display=h.length?"block":"none";$("history").innerHTML=h.slice().reverse().map((r,j)=>'<div class="game"><div class="date">ROUND '+(h.length-j)+'　'+esc(r.date)+'　／ START '+fmt(r.start)+'点</div>'+r.players.map(p=>{let d=p.end-r.start;return '<div class="hrow"><span>'+esc(p.name)+'</span><b class="'+(d>0?"pos":d<0?"neg":"zero")+'">'+(d>0?"+":"")+fmt(d)+'点</b></div>'}).join("")+'</div>').join("")}
+$("clear").onclick=()=>{if(confirm("履歴をすべて削除しますか？")){rounds=[];localStorage.removeItem("psRounds");renderSession()}};render();
+})()
+</script></body></html>
