@@ -4,128 +4,194 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#07090d">
 <title>Poker Score</title>
 <style>
-:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--green:#087f23;--red:#c62828}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
-main{max-width:680px;margin:auto;padding:18px 14px 40px}
-h1{text-align:center;font-size:27px;margin:5px 0 3px}.lead{text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px}
-.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #0000000d}
-.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.start{font-size:25px;font-weight:800}.small{font-size:12px;color:var(--muted)}
-button{border:0;border-radius:11px;padding:11px 14px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
-button:active{transform:scale(.98)}.dark{background:#111827;color:#fff}.light{background:#eef0f3;color:#111827}.redbtn{background:#fff0f0;color:#c62828}
-.players{margin-top:10px}.p{display:grid;grid-template-columns:30px minmax(80px,1fr) 118px 90px 38px;gap:7px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
-.p:last-child{border-bottom:0}.rank{color:var(--muted);font-size:13px}.diff{text-align:right;font-weight:800;font-size:14px}
-.pos{color:var(--green)}.neg{color:var(--red)}.zero{color:var(--muted)}
-input{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px;font-size:17px;background:#fff;color:var(--text)}
-input[type=number]{text-align:right}.sum{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;margin-top:8px;font-weight:800}
-.notice{margin-top:10px;padding:10px;border-radius:10px;font-size:13px}.ok{background:#eaf7ed;color:#176b2c}.bad{background:#fff0f0;color:#a92323}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.history{display:none}.game{padding:11px 0;border-bottom:1px solid var(--line)}.game:last-child{border-bottom:0}
-.gamehead{font-size:12px;color:var(--muted);margin-bottom:5px}.line{display:flex;justify-content:space-between;margin:4px 0;font-size:14px}
-@media(max-width:500px){.p{grid-template-columns:27px minmax(70px,1fr) 100px 78px 36px}.diff{font-size:13px}button{padding:10px 11px}}
+:root{
+ --bg:#07090d;--panel:#11151c;--panel2:#171c25;--line:#29303b;
+ --text:#f5f7fa;--muted:#8c96a5;--gold:#d7b56d;--green:#4ade80;--red:#fb7185;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg)}
+body{
+ color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;
+ letter-spacing:.01em;
+}
+body:before{
+ content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+ background:radial-gradient(circle at 50% -10%,#253142 0,transparent 38%);
+}
+main{position:relative;max-width:620px;margin:auto;padding:18px 14px calc(35px + env(safe-area-inset-bottom))}
+header{text-align:center;padding:8px 0 18px}
+.logo{font-size:14px;letter-spacing:.28em;color:var(--gold);font-weight:800}
+h1{margin:5px 0 2px;font-size:31px;letter-spacing:.08em}
+.subtitle{color:var(--muted);font-size:12px}
+.card{
+ background:linear-gradient(145deg,rgba(24,29,38,.98),rgba(13,17,23,.98));
+ border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0;
+ box-shadow:0 14px 35px rgba(0,0,0,.25);
+}
+.hero{padding:18px}
+.heroTop{display:flex;align-items:center;justify-content:space-between}
+.label{font-size:11px;color:var(--muted);letter-spacing:.08em}
+.start{font-size:27px;font-weight:900;margin-top:1px}
+.start span{color:var(--gold)}
+.btn{
+ border:1px solid #343c48;background:#1c222c;color:#fff;border-radius:12px;
+ padding:11px 13px;font-size:14px;font-weight:800;cursor:pointer;
+ -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:scale(.97)}
+.btnGold{background:linear-gradient(135deg,#e2c47f,#b9934f);color:#12100b;border:0}
+.btnDark{background:#0b0e13}
+.sectionHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.sectionTitle{font-size:17px;font-weight:900}
+.badge{font-size:11px;color:var(--muted);background:#0b0e13;border:1px solid var(--line);padding:5px 8px;border-radius:99px}
+.players{margin-top:5px}
+.player{
+ display:grid;grid-template-columns:31px minmax(75px,1fr) 116px 90px 34px;
+ gap:7px;align-items:center;padding:11px 0;border-bottom:1px solid #222934;
+}
+.player:last-child{border-bottom:0}
+.rank{font-weight:900;color:#707a89;font-size:12px;text-align:center}
+.name{
+ width:100%;border:1px solid #303846;border-radius:10px;background:#0c1016;color:#fff;
+ padding:10px;font-size:15px;font-weight:750;outline:none
+}
+.end{
+ width:100%;border:1px solid #303846;border-radius:10px;background:#0c1016;color:#fff;
+ padding:10px;font-size:17px;font-weight:900;text-align:right;outline:none
+}
+.name:focus,.end:focus{border-color:#a98a52;box-shadow:0 0 0 2px rgba(215,181,109,.12)}
+.diff{text-align:right;font-weight:900;font-size:13px}
+.pos{color:var(--green)}.neg{color:var(--red)}.zero{color:#9aa3b1}
+.x{padding:7px 9px;background:transparent;border:0;color:#687282;font-size:21px}
+.summary{
+ display:flex;align-items:center;justify-content:space-between;
+ border-top:1px solid var(--line);padding-top:15px;margin-top:4px
+}
+.totalLabel{color:var(--muted);font-size:12px}
+.total{font-size:21px;font-weight:950}
+.notice{
+ margin-top:11px;border-radius:13px;padding:11px 12px;font-size:13px;font-weight:800;
+ display:flex;align-items:center;gap:8px
+}
+.ok{background:rgba(74,222,128,.09);border:1px solid rgba(74,222,128,.22);color:var(--green)}
+.bad{background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.2);color:var(--red)}
+.save{width:100%;margin-top:11px;padding:14px;font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.hint{color:#687282;font-size:11px;line-height:1.5;margin-top:9px}
+.history{display:none}
+.game{padding:12px 0;border-bottom:1px solid #252c36}
+.game:last-child{border:0}
+.gameDate{color:var(--muted);font-size:11px;margin-bottom:8px}
+.row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.empty{text-align:center;color:var(--muted);padding:18px}
+@media(max-width:500px){
+ .player{grid-template-columns:26px minmax(62px,1fr) 98px 72px 30px}
+ .diff{font-size:11px}
+ .name{font-size:14px;padding:9px 7px}.end{font-size:16px;padding:9px 7px}
+}
 </style>
 </head>
 <body>
 <main>
-<h1>♠ Poker Score</h1>
-<div class="lead">5,000点スタート・終了時の点数だけ入力</div>
+<header>
+ <div class="logo">♠  POKER SCORE  ♠</div>
+ <h1>SESSION TABLE</h1>
+ <div class="subtitle">終了点数を入力するだけ。精算をスマートに。</div>
+</header>
 
-<section class="card">
- <div class="top">
-  <div><div class="small">初期点数</div><div class="start">5,000 点</div></div>
-  <button class="light" id="add">＋ プレイヤー</button>
+<section class="card hero">
+ <div class="heroTop">
+  <div><div class="label">STARTING STACK</div><div class="start"><span>5,000</span> 点</div></div>
+  <button class="btn btnGold" id="add">＋ PLAYER</button>
  </div>
 </section>
 
 <section class="card">
- <div class="top"><b>今回の結果</b><span class="small" id="count"></span></div>
+ <div class="sectionHead">
+  <div class="sectionTitle">RESULT</div><div class="badge" id="count">2 PLAYERS</div>
+ </div>
  <div class="players" id="players"></div>
- <div class="sum"><span>差額の合計</span><span id="total">0 点</span></div>
- <div class="notice ok" id="notice">✓ 差額の合計は0点です</div>
+ <div class="summary"><div><div class="totalLabel">差額合計</div></div><div class="total" id="total">0 点</div></div>
+ <div class="notice ok" id="notice">✓ 精算OK — 合計が0点です</div>
+ <button class="btn btnGold save" id="save">結果を確定する</button>
+ <div class="hint">※ 全員5,000点スタート。終了点数 − 5,000点で差額を自動計算します。</div>
 </section>
 
 <section class="card">
- <div class="actions">
-  <button class="light" id="save">💾 結果を保存</button>
-  <button class="dark" id="reset">↻ 新しいゲーム</button>
+ <div class="grid">
+  <button class="btn" id="newGame">↻ 新しいゲーム</button>
+  <button class="btn btnDark" id="reset">入力をリセット</button>
  </div>
 </section>
 
 <section class="card history" id="historyCard">
- <div class="top"><b>保存した結果</b><button class="redbtn" id="clear">履歴削除</button></div>
+ <div class="sectionHead"><div class="sectionTitle">HISTORY</div><button class="btn" id="clear">履歴削除</button></div>
  <div id="history"></div>
 </section>
 </main>
-
 <script>
-(function(){
-"use strict";
-const START=5000;
-const $=id=>document.getElementById(id);
-let players=load("pokerPlayers")||[
- {name:"プレイヤー1",end:5000},{name:"プレイヤー2",end:5000}
-];
-
-function load(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
-function persist(){localStorage.setItem("pokerPlayers",JSON.stringify(players))}
-function fmt(n){return Number(n).toLocaleString("ja-JP")}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+(()=>{"use strict";
+const START=5000,$=id=>document.getElementById(id);
+const load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const fmt=n=>Number(n).toLocaleString("ja-JP");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let players=load("pokerPlayersV3")||[{name:"PLAYER 1",end:5000},{name:"PLAYER 2",end:5000}];
 
 function render(){
- const box=$("players"); $("count").textContent=players.length+"人";
- const diffs=players.map(p=>(Number(p.end)||0)-START);
- const order=players.map((_,i)=>i).sort((a,b)=>diffs[b]-diffs[a]);
- box.innerHTML=players.length?players.map((p,i)=>{
-   const d=diffs[i], cls=d>0?"pos":d<0?"neg":"zero", sign=d>0?"+":"";
-   return '<div class="p">'+
-    '<span class="rank">'+(order.indexOf(i)+1)+'位</span>'+
-    '<input class="name" data-i="'+i+'" value="'+esc(p.name)+'" aria-label="名前">'+
-    '<input class="end" data-i="'+i+'" type="number" inputmode="numeric" min="0" step="100" value="'+(Number(p.end)||0)+'" aria-label="終了点">'+
-    '<div class="diff '+cls+'">'+sign+fmt(d)+'点</div>'+
-    '<button class="redbtn remove" data-i="'+i+'">×</button></div>';
- }).join(""):'<div style="text-align:center;color:#888;padding:18px">プレイヤーを追加してください</div>';
+ const box=$("players"), diffs=players.map(p=>(Number(p.end)||0)-START);
+ const order=[...players.keys()].sort((a,b)=>diffs[b]-diffs[a]);
+ $("count").textContent=players.length+" PLAYERS";
+ box.innerHTML=players.map((p,i)=>{
+  const d=diffs[i],cl=d>0?"pos":d<0?"neg":"zero";
+  return `<div class="player">
+   <div class="rank">${order.indexOf(i)+1}</div>
+   <input class="name" data-i="${i}" value="${esc(p.name)}">
+   <input class="end" data-i="${i}" type="number" inputmode="numeric" min="0" step="100" value="${Number(p.end)||0}">
+   <div class="diff ${cl}">${d>0?"+":""}${fmt(d)}点</div>
+   <button class="x" data-i="${i}">×</button>
+  </div>`;
+ }).join("")||'<div class="empty">＋ PLAYER から追加してください</div>';
 
- document.querySelectorAll(".name").forEach(el=>el.addEventListener("input",e=>{
-   players[+e.target.dataset.i].name=e.target.value;persist();
- }));
- document.querySelectorAll(".end").forEach(el=>el.addEventListener("input",e=>{
-   const i=+e.target.dataset.i; players[i].end=Math.max(0,Number(e.target.value)||0); persist(); render();
- }));
- document.querySelectorAll(".remove").forEach(el=>el.addEventListener("click",()=>{
-   const i=+el.dataset.i;if(confirm(players[i].name+"を削除しますか？")){players.splice(i,1);persist();render();}
- }));
+ document.querySelectorAll(".name").forEach(el=>el.onchange=e=>{
+  players[+e.target.dataset.i].name=e.target.value.trim()||"PLAYER";save("pokerPlayersV3",players);
+ });
+ document.querySelectorAll(".end").forEach(el=>el.onchange=e=>{
+  const i=+e.target.dataset.i;players[i].end=Math.max(0,Number(e.target.value)||0);save("pokerPlayersV3",players);render();
+ });
+ document.querySelectorAll(".x").forEach(el=>el.onclick=()=>{
+  if(players.length<=2){alert("最低2人で使用できます。");return}
+  players.splice(+el.dataset.i,1);save("pokerPlayersV3",players);render();
+ });
  const total=diffs.reduce((a,b)=>a+b,0);
  $("total").textContent=(total>0?"+":"")+fmt(total)+" 点";
  $("notice").className="notice "+(total===0?"ok":"bad");
- $("notice").textContent=total===0?"✓ 差額の合計は0点です":"⚠ 差額の合計が "+(total>0?"+":"")+fmt(total)+"点です。点数を確認してください";
+ $("notice").textContent=total===0?"✓ 精算OK — 合計が0点です":"⚠ 合計 "+(total>0?"+":"")+fmt(total)+"点 — 入力を確認してください";
  renderHistory();
 }
-
-$("add").addEventListener("click",()=>{players.push({name:"プレイヤー"+(players.length+1),end:START});persist();render()});
-$("reset").addEventListener("click",()=>{
- if(!confirm("現在の点数をリセットして、新しいゲームを始めますか？"))return;
- players=players.map(p=>({name:p.name,end:START}));persist();render();
-});
-$("save").addEventListener("click",()=>{
- const history=load("pokerHistory")||[];
- history.unshift({date:new Date().toLocaleString("ja-JP"),players:players.map(p=>({name:p.name,end:Number(p.end)||0}))});
- localStorage.setItem("pokerHistory",JSON.stringify(history.slice(0,30)));
- renderHistory();alert("結果を保存しました！");
-});
-$("clear").addEventListener("click",()=>{
- if(confirm("保存した履歴をすべて削除しますか？")){localStorage.removeItem("pokerHistory");renderHistory();}
-});
+$("add").onclick=()=>{players.push({name:"PLAYER "+(players.length+1),end:START});save("pokerPlayersV3",players);render()};
+function resetPlayers(){players=players.map(p=>({name:p.name,end:START}));save("pokerPlayersV3",players);render()}
+$("reset").onclick=()=>{if(confirm("終了点数をすべて5,000点に戻しますか？"))resetPlayers()};
+$("newGame").onclick=()=>{if(confirm("新しいゲームを開始しますか？\n現在の入力は5,000点に戻ります。"))resetPlayers()};
+$("save").onclick=()=>{
+ const total=players.reduce((a,p)=>a+(Number(p.end)||0)-START,0);
+ if(total!==0){alert("差額の合計が0点ではありません。\n終了点数を確認してください。");return}
+ const h=load("pokerHistoryV3")||[];
+ h.unshift({date:new Date().toLocaleString("ja-JP"),players:players.map(p=>({...p,end:Number(p.end)||0}))});
+ save("pokerHistoryV3",h.slice(0,50));alert("結果を保存しました。");renderHistory();
+};
+$("clear").onclick=()=>{if(confirm("履歴をすべて削除しますか？")){localStorage.removeItem("pokerHistoryV3");renderHistory()}};
 function renderHistory(){
- const h=load("pokerHistory")||[], card=$("historyCard"), box=$("history");
- card.style.display=h.length?"block":"none";
- box.innerHTML=h.map(g=>{
-  const s=[...g.players].sort((a,b)=>(b.end-START)-(a.end-START));
-  return '<div class="game"><div class="gamehead">'+esc(g.date)+'</div>'+
-   s.map((p,i)=>{let d=p.end-START;return '<div class="line"><span>'+(i+1)+'位　'+esc(p.name)+'</span><b class="'+(d>0?"pos":d<0?"neg":"zero")+'">'+(d>0?"+":"")+fmt(d)+'点</b></div>'}).join("")+
-   '</div>';
+ const h=load("pokerHistoryV3")||[];$("historyCard").style.display=h.length?"block":"none";
+ $("history").innerHTML=h.map(g=>{
+  const ps=[...g.players].sort((a,b)=>(b.end-START)-(a.end-START));
+  return `<div class="game"><div class="gameDate">${esc(g.date)}</div>`+
+   ps.map((p,i)=>{let d=p.end-START;return `<div class="row"><span>${i+1}位　${esc(p.name)}</span><b class="${d>0?"pos":d<0?"neg":"zero"}">${d>0?"+":""}${fmt(d)}点</b></div>`}).join("")+
+   `</div>`;
  }).join("");
 }
 render();
