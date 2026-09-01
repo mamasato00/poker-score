@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#111827">
+<title>Poker Score</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--green:#087f23;--red:#c62828}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
+main{max-width:680px;margin:auto;padding:18px 14px 40px}
+h1{text-align:center;font-size:27px;margin:5px 0 3px}.lead{text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #0000000d}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.start{font-size:25px;font-weight:800}.small{font-size:12px;color:var(--muted)}
+button{border:0;border-radius:11px;padding:11px 14px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:active{transform:scale(.98)}.dark{background:#111827;color:#fff}.light{background:#eef0f3;color:#111827}.redbtn{background:#fff0f0;color:#c62828}
+.players{margin-top:10px}.p{display:grid;grid-template-columns:30px minmax(80px,1fr) 118px 90px 38px;gap:7px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.p:last-child{border-bottom:0}.rank{color:var(--muted);font-size:13px}.diff{text-align:right;font-weight:800;font-size:14px}
+.pos{color:var(--green)}.neg{color:var(--red)}.zero{color:var(--muted)}
+input{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px;font-size:17px;background:#fff;color:var(--text)}
+input[type=number]{text-align:right}.sum{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;margin-top:8px;font-weight:800}
+.notice{margin-top:10px;padding:10px;border-radius:10px;font-size:13px}.ok{background:#eaf7ed;color:#176b2c}.bad{background:#fff0f0;color:#a92323}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.history{display:none}.game{padding:11px 0;border-bottom:1px solid var(--line)}.game:last-child{border-bottom:0}
+.gamehead{font-size:12px;color:var(--muted);margin-bottom:5px}.line{display:flex;justify-content:space-between;margin:4px 0;font-size:14px}
+@media(max-width:500px){.p{grid-template-columns:27px minmax(70px,1fr) 100px 78px 36px}.diff{font-size:13px}button{padding:10px 11px}}
+</style>
+</head>
+<body>
+<main>
+<h1>♠ Poker Score</h1>
+<div class="lead">5,000点スタート・終了時の点数だけ入力</div>
+
+<section class="card">
+ <div class="top">
+  <div><div class="small">初期点数</div><div class="start">5,000 点</div></div>
+  <button class="light" id="add">＋ プレイヤー</button>
+ </div>
+</section>
+
+<section class="card">
+ <div class="top"><b>今回の結果</b><span class="small" id="count"></span></div>
+ <div class="players" id="players"></div>
+ <div class="sum"><span>差額の合計</span><span id="total">0 点</span></div>
+ <div class="notice ok" id="notice">✓ 差額の合計は0点です</div>
+</section>
+
+<section class="card">
+ <div class="actions">
+  <button class="light" id="save">💾 結果を保存</button>
+  <button class="dark" id="reset">↻ 新しいゲーム</button>
+ </div>
+</section>
+
+<section class="card history" id="historyCard">
+ <div class="top"><b>保存した結果</b><button class="redbtn" id="clear">履歴削除</button></div>
+ <div id="history"></div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const START=5000;
+const $=id=>document.getElementById(id);
+let players=load("pokerPlayers")||[
+ {name:"プレイヤー1",end:5000},{name:"プレイヤー2",end:5000}
+];
+
+function load(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function persist(){localStorage.setItem("pokerPlayers",JSON.stringify(players))}
+function fmt(n){return Number(n).toLocaleString("ja-JP")}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function render(){
+ const box=$("players"); $("count").textContent=players.length+"人";
+ const diffs=players.map(p=>(Number(p.end)||0)-START);
+ const order=players.map((_,i)=>i).sort((a,b)=>diffs[b]-diffs[a]);
+ box.innerHTML=players.length?players.map((p,i)=>{
+   const d=diffs[i], cls=d>0?"pos":d<0?"neg":"zero", sign=d>0?"+":"";
+   return '<div class="p">'+
+    '<span class="rank">'+(order.indexOf(i)+1)+'位</span>'+
+    '<input class="name" data-i="'+i+'" value="'+esc(p.name)+'" aria-label="名前">'+
+    '<input class="end" data-i="'+i+'" type="number" inputmode="numeric" min="0" step="100" value="'+(Number(p.end)||0)+'" aria-label="終了点">'+
+    '<div class="diff '+cls+'">'+sign+fmt(d)+'点</div>'+
+    '<button class="redbtn remove" data-i="'+i+'">×</button></div>';
+ }).join(""):'<div style="text-align:center;color:#888;padding:18px">プレイヤーを追加してください</div>';
+
+ document.querySelectorAll(".name").forEach(el=>el.addEventListener("input",e=>{
+   players[+e.target.dataset.i].name=e.target.value;persist();
+ }));
+ document.querySelectorAll(".end").forEach(el=>el.addEventListener("input",e=>{
+   const i=+e.target.dataset.i; players[i].end=Math.max(0,Number(e.target.value)||0); persist(); render();
+ }));
+ document.querySelectorAll(".remove").forEach(el=>el.addEventListener("click",()=>{
+   const i=+el.dataset.i;if(confirm(players[i].name+"を削除しますか？")){players.splice(i,1);persist();render();}
+ }));
+ const total=diffs.reduce((a,b)=>a+b,0);
+ $("total").textContent=(total>0?"+":"")+fmt(total)+" 点";
+ $("notice").className="notice "+(total===0?"ok":"bad");
+ $("notice").textContent=total===0?"✓ 差額の合計は0点です":"⚠ 差額の合計が "+(total>0?"+":"")+fmt(total)+"点です。点数を確認してください";
+ renderHistory();
+}
+
+$("add").addEventListener("click",()=>{players.push({name:"プレイヤー"+(players.length+1),end:START});persist();render()});
+$("reset").addEventListener("click",()=>{
+ if(!confirm("現在の点数をリセットして、新しいゲームを始めますか？"))return;
+ players=players.map(p=>({name:p.name,end:START}));persist();render();
+});
+$("save").addEventListener("click",()=>{
+ const history=load("pokerHistory")||[];
+ history.unshift({date:new Date().toLocaleString("ja-JP"),players:players.map(p=>({name:p.name,end:Number(p.end)||0}))});
+ localStorage.setItem("pokerHistory",JSON.stringify(history.slice(0,30)));
+ renderHistory();alert("結果を保存しました！");
+});
+$("clear").addEventListener("click",()=>{
+ if(confirm("保存した履歴をすべて削除しますか？")){localStorage.removeItem("pokerHistory");renderHistory();}
+});
+function renderHistory(){
+ const h=load("pokerHistory")||[], card=$("historyCard"), box=$("history");
+ card.style.display=h.length?"block":"none";
+ box.innerHTML=h.map(g=>{
+  const s=[...g.players].sort((a,b)=>(b.end-START)-(a.end-START));
+  return '<div class="game"><div class="gamehead">'+esc(g.date)+'</div>'+
+   s.map((p,i)=>{let d=p.end-START;return '<div class="line"><span>'+(i+1)+'位　'+esc(p.name)+'</span><b class="'+(d>0?"pos":d<0?"neg":"zero")+'">'+(d>0?"+":"")+fmt(d)+'点</b></div>'}).join("")+
+   '</div>';
+ }).join("");
+}
+render();
+})();
+</script>
+</body>
+</html>
